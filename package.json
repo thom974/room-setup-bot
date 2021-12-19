@@ -1,0 +1,31 @@
+{
+  "name": "room-setup-bot",
+  "version": "1.0.0",
+  "description": "room setup designer discord bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thom974/room-setup-bot.git"
+  },
+  "keywords": [
+    "room",
+    "setup",
+    "design",
+    "customize",
+    "discord",
+    "bot"
+  ],
+  "author": "Thomas Luc",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/thom974/room-setup-bot/issues"
+  },
+  "homepage": "https://github.com/thom974/room-setup-bot#readme",
+  "dependencies": {
+    "discord.js": "^13.3.1",
+    "dotenv": "^10.0.0"
+  }
+}
