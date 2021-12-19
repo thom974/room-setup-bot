@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('@discordjs/builders')
+const fs = require('fs')
 const { REST } = require('@discordjs/rest')
 const { Routes } = require('discord-api-types/v9')
 const { Constants } = require('discord.js')
@@ -6,25 +6,13 @@ const dotenv = require('dotenv')
 
 dotenv.config()
 
-const commands = [
-    new SlashCommandBuilder()
-        .setName('greeting')
-        .setDescription('bot sends a greeting'),
-    new SlashCommandBuilder()
-        .setName('random')
-        .setDescription('gives a random number in the specified range, inclusive')
-        .addNumberOption(option => option
-            .setName('lower')
-            .setDescription('the lower bound of the range')
-            .setRequired(true)
-        )
-        .addNumberOption(option => option
-            .setName('upper')
-            .setDescription('the upper bound of the range')
-            .setRequired(true)
-        )
-]
-    .map(command => command.toJSON())
+const commands = []
+const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'))
+
+for (const file of commandFiles) {
+    const command = require(`./commands/${file}`)
+    commands.push(command.data.toJSON())
+}
 
 const rest = new REST({ version: '9' }).setToken(process.env.TOKEN)
 
