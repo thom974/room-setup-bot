@@ -19,61 +19,22 @@ const client = new Client({
 
 client.commands = new Collection()
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'))
+const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'))
 
 for (const file of commandFiles) {
     const command = require(`./commands/${file}`)
     client.commands.set(command.data.name, command)
 }
 
-client.on('ready', () => {
-    console.log('the bot is online.')
+for (const file of eventFiles) {
+    const event = require(`./events/${file}`)
+    const { name, once, execute } = event
 
-    // ---- COMMANDS ARE NOW REGISTERED FROM commands.js ----
-    // // access Guild object from GuildManager object, which is a collection (map)
-    // const guildID = '583816025259245694'
-    // const guild = client.guilds.cache.get(guildID)
-
-    // // if valid Guild obtained, set commands for that Guild 
-    // const commands = guild ? guild.commands : client.application.commands
-
-    // // add commands for Guild 
-    // commands.create({
-    //     name: 'greeting',
-    //     description: 'bot sends a greeting'
-    // })
-
-    // commands.create({
-    //     name: 'random',
-    //     description: 'gives a random number in the specified range, inclusive',
-    //     options: [
-    //         {
-    //             name: 'lower',
-    //             description: 'the lower bound of the range',
-    //             required: true,
-    //             type: Constants.ApplicationCommandOptionTypes.NUMBER
-    //         },
-    //         {
-    //             name: 'upper',
-    //             description: 'the upper bound of the range',
-    //             required: true,
-    //             type: Constants.ApplicationCommandOptionTypes.NUMBER
-    //         }
-    //     ]
-    // })
-})
-
-client.on('interactionCreate', async interaction => {
-    if (!interaction.isCommand()) return
-
-    const command = client.commands.get(interaction.commandName)
-    if (!command) return
-
-    try {
-        await command.execute(interaction)
-    } catch (err) {
-        console.log(err)
-        await interaction.reply({ content: 'Error while executing this command!', ephemeral: true })
+    if (once) {
+        client.once(name, (...args) => execute(...args))
+    } else {
+        client.on(name, (...args) => execute(...args))
     }
-})
+}
 
 client.login(process.env.TOKEN)
