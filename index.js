@@ -1,4 +1,5 @@
 const dotenv = require('dotenv')
+
 dotenv.config()
 
 const { 
@@ -17,50 +18,51 @@ const client = new Client({
 client.on('ready', () => {
     console.log('the bot is online.')
 
-    // access Guild object from GuildManager object, which is a collection (map)
-    const guildID = '583816025259245694'
-    const guild = client.guilds.cache.get(guildID)
+    // ---- COMMANDS ARE NOW REGISTERED FROM commands.js ----
+    // // access Guild object from GuildManager object, which is a collection (map)
+    // const guildID = '583816025259245694'
+    // const guild = client.guilds.cache.get(guildID)
 
-    // if valid Guild obtained, set commands for that Guild 
-    const commands = guild ? guild.commands : client.application.commands
+    // // if valid Guild obtained, set commands for that Guild 
+    // const commands = guild ? guild.commands : client.application.commands
 
-    // add commands for Guild 
-    commands.create({
-        name: 'greeting',
-        description: 'bot sends a greeting'
-    })
+    // // add commands for Guild 
+    // commands.create({
+    //     name: 'greeting',
+    //     description: 'bot sends a greeting'
+    // })
 
-    commands.create({
-        name: 'random',
-        description: 'gives a random number in the specified range, inclusive',
-        options: [
-            {
-                name: 'lower',
-                description: 'the lower bound of the range',
-                required: true,
-                type: Constants.ApplicationCommandOptionTypes.NUMBER
-            },
-            {
-                name: 'upper',
-                description: 'the upper bound of the range',
-                required: true,
-                type: Constants.ApplicationCommandOptionTypes.NUMBER
-            }
-        ]
-    })
+    // commands.create({
+    //     name: 'random',
+    //     description: 'gives a random number in the specified range, inclusive',
+    //     options: [
+    //         {
+    //             name: 'lower',
+    //             description: 'the lower bound of the range',
+    //             required: true,
+    //             type: Constants.ApplicationCommandOptionTypes.NUMBER
+    //         },
+    //         {
+    //             name: 'upper',
+    //             description: 'the upper bound of the range',
+    //             required: true,
+    //             type: Constants.ApplicationCommandOptionTypes.NUMBER
+    //         }
+    //     ]
+    // })
 })
 
-client.on('messageCreate', (message) => {
-    if (!message.author.bot) {
-        const channel = message.channel
-        const user = message.author.username
-        const content = message.content 
+// client.on('messageCreate', (message) => {
+//     if (!message.author.bot) {
+//         const channel = message.channel
+//         const user = message.author.username
+//         const content = message.content 
         
-        channel.send(`${user} sent a message: ${content}`)
-    } 
-})
+//         channel.send(`${user} sent a message: ${content}`)
+//     } 
+// })
 
-client.on('interactionCreate', async (interaction) => {
+client.on('interactionCreate', async interaction => {
 
     // if the interaction emitted is NOT a command interaction, return 
     if (!interaction.isCommand()) return 
