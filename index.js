@@ -1,11 +1,13 @@
 const dotenv = require('dotenv')
+const fs = require('fs')
 
 dotenv.config()
 
 const { 
     Client, 
     Intents, 
-    Constants 
+    Constants, 
+    Collection
 } = require('discord.js')
 
 const client = new Client({ 
@@ -14,6 +16,14 @@ const client = new Client({
         Intents.FLAGS.GUILD_MESSAGES
     ]
 })
+
+client.commands = new Collection()
+const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'))
+
+for (const file of commandFiles) {
+    const command = require(`./commands/${file}`)
+    client.commands.set(command.data.name, command)
+}
 
 client.on('ready', () => {
     console.log('the bot is online.')
@@ -52,42 +62,17 @@ client.on('ready', () => {
     // })
 })
 
-// client.on('messageCreate', (message) => {
-//     if (!message.author.bot) {
-//         const channel = message.channel
-//         const user = message.author.username
-//         const content = message.content 
-        
-//         channel.send(`${user} sent a message: ${content}`)
-//     } 
-// })
-
 client.on('interactionCreate', async interaction => {
+    if (!interaction.isCommand()) return
 
-    // if the interaction emitted is NOT a command interaction, return 
-    if (!interaction.isCommand()) return 
+    const command = client.commands.get(interaction.commandName)
+    if (!command) return
 
-    // destructure commandName and options within Interaction object 
-    const { commandName, options } = interaction
-
-    // handle specific commands 
-    if (commandName === 'greeting') {
-        const channel = interaction.channel
-        const user = interaction.user.username
-
-        // channel.send(`Greetings to you, ${user}!`) <-- this displays interaction failed?
-        interaction.reply({
-            content: `Greetings to you, ${user}!`
-        })
-    } 
-    else if (commandName === 'random') {
-        const lower = Math.min(options.getNumber('lower'), options.getNumber('upper'))
-        const upper = Math.max(options.getNumber('upper'), options.getNumber('lower'))
-        const random = Math.floor(Math.random() * (upper - lower + 1)) + lower
-        
-        interaction.reply({
-            content: `Your random number is: ${random}!`
-        })
+    try {
+        await command.execute(interaction)
+    } catch (err) {
+        console.log(err)
+        await interaction.reply({ content: 'Error while executing this command!', ephemeral: true })
     }
 })
 
