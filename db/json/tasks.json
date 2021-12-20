@@ -1,0 +1,47 @@
+[
+    {
+        "task_name" : "Do the laundry",
+        "task_description" : "You need to gather and prepare some ingredients for today's breakfast, lunch and dinner!",
+        "task_reward" : 5.00
+    },
+    {
+        "task_name" : "Do the dishes",
+        "task_description" : "Everyone's favourite household chore.",
+        "task_reward" : 5.00
+    },
+    {
+        "task_name" : "Clean up your room",
+        "task_description" : "Pick your clothes off the floor, organize your things, vacuum.",
+        "task_reward" : 8.00
+    },
+    {
+        "task_name" : "Take out the trash",
+        "task_description" : "Missing garbage day as an adult is one of the most disappointing things ever.",
+        "task_reward" : 5.00
+    },
+    {
+        "task_name" : "Sweep kitchen floor",
+        "task_description" : "Stop spilling things on the floor while you're cooking!",
+        "task_reward" : 5.00
+    },
+    {
+        "task_name" : "Wipe down kitchen countertops",
+        "task_description" : "Grab your trusty rag and get cleaning.",
+        "task_reward" : 5.00
+    },
+    {
+        "task_name" : "Vacuum and mop the first floor",
+        "task_description" : "More demanding than you'd think; hope your back's okay.",
+        "task_reward" : 10.00
+    },
+    {
+        "task_name" : "Do the laundry",
+        "task_description" : "Make sure you separate lights and darks!",
+        "task_reward" : 8.00
+    },
+    {
+        "task_name" : "Dusting your furniture",
+        "task_description" : "You'll have to do this every month or so.",
+        "task_reward" : 10.00
+    }
+]
