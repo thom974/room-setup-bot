@@ -10,12 +10,23 @@ const {
     Collection
 } = require('discord.js')
 
+const { Client: dbClient } = require('pg')
+
 const client = new Client({ 
     intents: [
         Intents.FLAGS.GUILDS,
         Intents.FLAGS.GUILD_MESSAGES
     ]
 })
+
+client.dbClient = new dbClient({
+    user: process.env.DBUSER,
+    password: process.env.DBPASSWORD,
+    host: process.env.DBHOST,
+    port: process.env.DBPORT,
+    database: process.env.DBDATABASE
+})
+client.dbClient.connect()
 
 client.commands = new Collection()
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'))
