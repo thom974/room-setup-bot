@@ -22,8 +22,8 @@ module.exports = {
             // Check if user already in database
             if (!res.rows.length) {
                 // Add record to 'users' table 
-                dbClient.query(`INSERT INTO users (discord_id, balance, job_id) 
-                    VALUES ('${userID}', '${balance}', '${jobID}')`, (err, res) => {
+                dbClient.query(`INSERT INTO users (discord_id, balance, job_id, join_date) 
+                    VALUES ('${userID}', '${balance}', '${jobID}', NOW())`, (err, res) => {
                         if (err) throw err
 
                         interaction.reply({
@@ -51,14 +51,12 @@ module.exports = {
                     }
 
                     // Add tasks to user_tasks table 
-                    for (const task_id of choices) {
-                        dbClient.query(`INSERT INTO users_tasks (discord_id, task_id)
-                            VALUES ('${userID}', '${task_id}')`, (err, res) => {
-                                if (err) throw err
-
-                                console.log(`added task ${task_id} for ${username}!`)
-                            })
-                    }
+                    
+                    dbClient.query(`INSERT INTO users_tasks (discord_id, task_one_id, task_two_id, task_three_id)
+                        VALUES ('${userID}', '${choices[0]}', '${choices[1]}','${choices[2]}')`, (err, res) => {
+                            if (err) throw err
+                            console.log('successfully inserted values')
+                    })
                 })
 
             } else {
