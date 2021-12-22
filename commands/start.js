@@ -14,14 +14,15 @@ module.exports = {
 
         // Default starting values for a new user
         const balance = 0   // $0 dollars
+        const paycheck = 0  // $0 dollars
         const jobID = 1     // Starting job "Cashier"
 
         const { rows: q1 }  = await dbClient.query(`SELECT discord_id FROM users WHERE discord_id=${userID}`)
         
         if (!q1.length) {
             // Add record to 'users' table 
-            const { rows: q2 } = await dbClient.query(`INSERT INTO users (discord_id, balance, job_id, join_date) 
-                VALUES ('${userID}', '${balance}', '${jobID}', NOW())`)
+            const { rows: q2 } = await dbClient.query(`INSERT INTO users (discord_id, balance, job_id, join_date, job_last_pay, job_paycheck) 
+                VALUES ('${userID}', '${balance}', '${jobID}', NOW(), NOW(), '${paycheck}')`)
                 
             interaction.reply({
                 content: `Welcome aboard, ${username}!` 
