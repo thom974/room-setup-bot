@@ -29,7 +29,6 @@ module.exports = {
                         interaction.reply({
                             content: `Welcome aboard, ${username}!` 
                         })
-                        console.log('successfully added user to db!')
                     })
 
                 // Assign three random tasks 
@@ -55,7 +54,6 @@ module.exports = {
                     dbClient.query(`INSERT INTO users_tasks (discord_id, task_one_id, task_two_id, task_three_id)
                         VALUES ('${userID}', '${choices[0]}', '${choices[1]}','${choices[2]}')`, (err, res) => {
                             if (err) throw err
-                            console.log('successfully inserted values')
                     })
                 })
 
