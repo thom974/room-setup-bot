@@ -18,33 +18,30 @@ module.exports = {
         
         // View user's current balance 
         if (interaction.options.getSubcommand() === 'view') {
-            dbClient.query(`SELECT balance FROM users WHERE discord_id=${userID}`, (err,res) => {
-                if (err) throw err
+            const { rows } = await dbClient.query(`SELECT balance FROM users WHERE discord_id=${userID}`)
+            const balance = rows[0].balance
 
-                const balance = res.rows[0].balance
-
-                const embed = {
-                    color: '#ff63ce',
-                    title: `${username}'s Wallet`,
-                    description: 'View how much money you have!',
-                    author: {
-                        name: 'Room Setup Bot'
-                    },
-                    fields: [
-                        {
-                            name: '\u200B',
-                            value: '\u200B'
-                        },
-                        {
-                            name: 'Current balance:',
-                            value: `${balance}`
-                        }
-                    ],
-                    timestamp: new Date(),
-                    footer: {
-                        text: 'Room Setup Bot'
+            embed = {
+                color: '#ff63ce',
+                title: `${username}'s Wallet`,
+                description: 'View how much money you have!',
+                author: {
+                    name: 'Room Setup Bot'
+                },
+                fields: [
+                    {
+                        name: 'Current balance:',
+                        value: `${balance}$`
                     }
+                ],
+                timestamp: new Date(),
+                footer: {
+                    text: 'Room Setup Bot'
                 }
+            }
+
+            interaction.reply({
+                embeds: [ embed ]
             })
         }
     }
