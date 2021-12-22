@@ -3,7 +3,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders')
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('tasks')
-        .setDescription('view all of your available tasks to complete!')
+        .setDescription('task related commands: view, collect, refresh')
         .addSubcommand(subcommand => subcommand
             .setName('view')
             .setDescription('view your available tasks.')
@@ -224,7 +224,8 @@ module.exports = {
                     })
                 })
             }
-        } else if (interaction.options.getSubcommand() === 'refresh') {
+        }   // Refreshes a user's tasks if possible 
+        else if (interaction.options.getSubcommand() === 'refresh') {
             dbClient.query(`SELECT 
                 NOW() - task_one_timer > interval '6 hours' AS task_one_id,
                 NOW() - task_two_timer > interval '6 hours' AS task_two_id,
@@ -235,7 +236,7 @@ module.exports = {
                 FROM users_tasks WHERE discord_id=${userID}`, (err,res) => {
                     
                     if (err) throw err
-
+                    console.log(res.rows[0])
                     const tasksRefresh = {
                         task_one_id: res.rows[0].task_one_id,
                         task_two_id: res.rows[0].task_two_id,
@@ -250,7 +251,7 @@ module.exports = {
 
                     const taskRefreshValues = Object.values(tasksRefresh)
 
-                    if (currentTasks.every(task => task !== null) || taskRefreshValues.every(refresh => refresh === false)) {
+                    if (currentTasks.every(task => task !== null) || taskRefreshValues.every(refresh => refresh === false || refresh === null)) {
                         interaction.reply({
                             content: `You don't have any tasks to refresh, ${username}!`,
                             ephemeral: true
