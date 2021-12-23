@@ -99,7 +99,7 @@ module.exports = {
                             const seconds = userTimes[taskListing].seconds
 
                             // Check if task is ready for refresh
-                            if (hours > 0) {
+                            if (seconds > 0) {
                                 userCurrentTasks.push(...[
                                     {
                                         name: 'Already completed this task!',
