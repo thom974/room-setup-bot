@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
+const { jobMarketUpdate } = require('./helpers/jobMarketUpdate')
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -21,10 +22,10 @@ module.exports = {
         
         if (!q1.length) {
             // Add record to 'users' table 
-            const { rows: q2 } = await dbClient.query(`INSERT INTO users (discord_id, balance, job_id, join_date, job_last_pay, job_paycheck) 
-                VALUES ('${userID}', '${balance}', '${jobID}', NOW(), NOW(), '${paycheck}')`)
+            const { rows: q2 } = await dbClient.query(`INSERT INTO users (discord_id, balance, job_id, join_date, job_last_pay, job_paycheck, job_join_date) 
+                VALUES ('${userID}', '${balance}', '${jobID}', NOW(), NOW(), '${paycheck}', NOW())`)
                 
-            interaction.reply({
+            await interaction.reply({
                 content: `Welcome aboard, ${username}!` 
             })
 
@@ -53,6 +54,9 @@ module.exports = {
             const { rows: q5 } = await dbClient.query(`INSERT INTO users_jobs (discord_id, job_id) VALUES
             ('${userID}', '${jobID}')`)
             
+            // Add jobs to job market
+            jobMarketUpdate(interaction)
+
         } else {
             interaction.reply({
                 content: `You've already registered your account, ${username}!`,
