@@ -17,25 +17,20 @@ const client = new Client({
 
 client.connect()
 
-const addJobs = () => {
-    client.query('DELETE FROM jobs', (err, res) => {
-        if (err) throw err
-        console.log('deleted all rows from jobs.')
-    })
+const addJobs = async () => {
+    // await client.query('DELETE FROM jobs')
 
-    client.query('ALTER SEQUENCE jobs_job_id_seq RESTART', (err, res) => {
-        if (err) throw err
-        console.log('restarted jobs sequence.')
-    })
+    // await client.query('ALTER SEQUENCE jobs_job_id_seq RESTART')
 
     for (const job of jobs) {
-        client.query(`INSERT INTO jobs (job_name, job_description, hourly_wage) 
-            VALUES ('${job.job_name}', '${job.job_description}', '${job.hourly_wage.toFixed(2)}')`,
-            (err, res) => {
-                if (err) throw err
-                console.log('inserted into jobs table.')
-            }
-        )
+        const { rows: q1} = await client.query(`SELECT job_name FROM jobs WHERE job_name='${job.job_name}'`)
+
+        // if (q1.length === 0) {
+        //     await client.query(`INSERT INTO jobs (job_name, job_description, hourly_wage, minimum_net, minimum_jobs) 
+        //     VALUES ('${job.job_name}', '${job.job_description}', '${job.hourly_wage.toFixed(2)}', '${job.minimum_net}', '${job.minimum_jobs}')`)
+        // }
+        console.log(job)
+        await client.query(`UPDATE jobs SET minimum_net = ${job.minimum_net}, minimum_jobs = ${job.minimum_jobs} WHERE job_name='${job.job_name}'`)
     }
 }
 
@@ -63,4 +58,3 @@ const addTasks = () => {
 
 
 addJobs()
-addTasks()

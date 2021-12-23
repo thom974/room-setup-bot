@@ -2,6 +2,127 @@
     {
         "job_name": "Cashier",
         "job_description": "Your standard grocery store cashier.",
-        "hourly_wage": 13.15
+        "hourly_wage": 13.15,
+        "minimum_net": 660,
+        "minimum_jobs": 1
+    },
+    {
+        "job_name": "Animal Breeder",
+        "job_description": "As an animal breeder, you select and breed animals based on their genealogy, characteristics, and offspring. You keep records of animal heats, birth intervals and pedigree and are knowledgable on artifical breeding techniques.",
+        "hourly_wage": 21.00,
+        "minimum_net": 1072,
+        "minimum_jobs": 1
+    },
+    {
+        "job_name": "Animal Caretaker",
+        "job_description": "Animal caretakers train, exercise, feed and groom animals. They also maintain the environments of the animals they are taking care of.",
+        "hourly_wage": 15.16,
+        "minimum_net": 765,
+        "minimum_jobs": 1
+    },
+    {
+        "job_name": "Baker",
+        "job_description": "Bakers produce different types and quantities of bread, pastries and other baked goods. Their products are then distributed to grocers, wholesalers, restaurants or international food services.",
+        "hourly_wage": 16.17,
+        "minimum_net": 817,
+        "minimum_jobs": 1
+    },
+    {
+        "job_name": "Cook",
+        "job_description": "Cooks work in restaurants or food services alongside other kitchen staff to prepare meals.",
+        "hourly_wage": 20.00,
+        "minimum_net": 1019,
+        "minimum_jobs": 1
+    },
+    {
+        "job_name": "Butcher",
+        "job_description": "Butchers produce marketable cuts and trims of meat from larger portions of animals. They help prepare meat for the market by weighing, wrapping and displaying it.",
+        "hourly_wage": 18.28,
+        "minimum_net": 928,
+        "minimum_jobs": 1
+    },
+    {
+        "job_name": "Florist",
+        "job_description": "Florists help prepare floral displays for various occasions such as weddings, banquets or funerals. With their artistry skills and knowledge for flowers, they help liven any occasion.",
+        "hourly_wage": 17.73,
+        "minimum_net": 900,
+        "minimum_jobs": 1
+    },
+    {
+        "job_name": "Accountant",
+        "job_description": "Accountants perform tasks pertaining to accounting, auditing and taxes, while often consulting with clients. Potential clients include corporations, government and individuals.",
+        "hourly_wage": 43.00,
+        "minimum_net": 2313,
+        "minimum_jobs": 1
+    },
+    {
+        "job_name": "Actuary",
+        "job_description": "A business professional whose job is to measure and manage the risk and potential outcome associated with an event. They often work with teams in varying sectors such as accounting, underwriting and finance.",
+        "hourly_wage": 73.00,
+        "minimum_net": 4277,
+        "minimum_jobs": 2
+    },
+    {
+        "job_name": "Air Traffic Controller",
+        "job_description": "Air traffic controllers regulate the flow of traffic for aircrafts within an area, such as an airport. They ensure the safety of an aircraft when flying, guide pilots and help minimize delays.",
+        "hourly_wage": 75.00,
+        "minimum_net": 4422,
+        "minimum_jobs": 2
+    },
+    {
+        "job_name": "Architect",
+        "job_description": "Architects design interior and exterior spaces, ranging from a single room to an entire complex of buildings. They work on both public or private commissioned projects.",
+        "hourly_wage": 63.46,
+        "minimum_net": 3611,
+        "minimum_jobs": 2
+    },
+    {
+        "job_name": "Archaeologist",
+        "job_description": "Archaeologists unearth and examine artifactsfrom past human/animal cultures. They help preserve and research these relics to gain a better understanding of our history.",
+        "hourly_wage": 39.00,
+        "minimum_net": 2076,
+        "minimum_jobs": 1
+    },
+    {
+        "job_name": "Urban Planner",
+        "job_description": "Urban planners design the layout of public spaces in accordance with the development and design goals of an area. They work with architects to ensure that all architectural designs comply with the given standards.",
+        "hourly_wage": 55.00,
+        "minimum_net": 3054,
+        "minimum_jobs": 2
+    },
+    {
+        "job_name": "Veterinarian",
+        "job_description": "Veterinarians treat and care for animals and work to improve public health. They often monitor the health of dogs and cats, but work with other animals such as ferrets, birds and rabbits.",
+        "hourly_wage": 63.00,
+        "minimum_net": 3580,
+        "minimum_jobs": 2
+    },
+    {
+        "job_name": "Dentist",
+        "job_description": "Dentists treat the teeth, gum and mouth problems of a patient. They use a variety of equipment, such as x-ray machines, drills, mouth mirrors and brushes.",
+        "hourly_wage": 105.00,
+        "minimum_net": 6884,
+        "minimum_jobs": 4
+    },
+    {
+        "job_name": "Computer System Architect",
+        "job_description": "Computer system architects design and create solutions to complex applicatons, system administration issues, or network concerns. They evaluate the effectiveness of existing systems, and suggest changes to meet organizational guidelines.",
+        "hourly_wage": 78.00,
+        "minimum_net": 4644,
+        "minimum_jobs": 2
+    },
+    {
+        "job_name": "Judge",
+        "job_description": "Judges oversee the legal processes in court. They conduct pretrial hearings, resolve disputes, facilitate discussion between opposing parties, and issue legal decisions.",
+        "hourly_wage": 123.00,
+        "minimum_net": 8700,
+        "minimum_jobs": 5
+    },
+    {
+        "job_name": "Systems Software Developer",
+        "job_description": "Systems software developers design and create the systems that keep computers functional. These can be operating systems for the general public or company specific systems.",
+        "hourly_wage": 100.00,
+        "minimum_net": 6432,
+        "minimum_jobs": 4
     }
 ]
