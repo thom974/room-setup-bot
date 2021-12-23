@@ -2,17 +2,22 @@ module.exports = {
     name: 'interactionCreate',
     once: false,
     async execute(interaction) {
-        if (!interaction.isCommand()) return
+        if (!interaction.isCommand() && !interaction.isButton()) return
 
         const client = interaction.client
-        const command = client.commands.get(interaction.commandName)
-        if (!command) return
 
-        try {
-            await command.execute(interaction)
-        } catch (err) {
-            console.log(err)
-            await interaction.reply({ content: 'Error while executing this command!', ephemeral: true })
+        if (interaction.isCommand()) {
+            const command = client.commands.get(interaction.commandName)
+            if (!command) return
+
+            try {
+                await command.execute(interaction)
+            } catch (err) {
+                console.log(err)
+                await interaction.reply({ content: 'Error while executing this command!', ephemeral: true })
+            }
+        } else if (interaction.isButton()){
+
         }
     }
 }
