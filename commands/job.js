@@ -2,7 +2,6 @@ const { SlashCommandBuilder } = require('@discordjs/builders')
 const { MessageActionRow, MessageButton, Collector } = require('discord.js')
 const { jobUpdate } = require('./helpers/jobUpdate.js')
 const { jobMarketUpdate } = require('./helpers/jobMarketUpdate.js')
-const { user } = require('pg/lib/defaults')
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -296,7 +295,7 @@ module.exports = {
 
             // If more than 5 days has passed auto update market
             if (days >= 5) {
-                jobMarketUpdate(interaction)
+                await jobMarketUpdate(interaction)
             } 
 
             // Fetch job info for jobs in user's job market
@@ -312,6 +311,11 @@ module.exports = {
 
             const { rows: q5 } = await dbClient.query(`SELECT COUNT(*) FROM users_jobs WHERE discord_id=${userID}`)
             const pastJobs = q5[0].count
+
+            const { rows: q6 } = await dbClient.query(`SELECT market_last_update - NOW() + interval '120 hours' AS time FROM users_job_market WHERE discord_id=${userID}`)
+            const hours = q6[0].time.hours
+            const minutes = q6[0].time.minutes
+            const seconds = q6[0].time.seconds
 
             // Create interaction action row 
             const marketRow = new MessageActionRow()
@@ -357,7 +361,7 @@ module.exports = {
             const marketEmbed = {
                 color: '#ff63ce',
                 title: `${username}'s Job Market`,
-                description: 'Jobs that are open for applications! Job market refreshes automatically every 5 days.',
+                description: `Jobs that are open for applications! Job market refreshes automatically every 5 days. Your market refreshes in: ${hours} hours, ${minutes} minutes and ${seconds} seconds.`,
                 author: {
                     name: 'Room Setup Bot'
                 },
