@@ -39,7 +39,9 @@ module.exports = {
             const { rows: q1 } = await dbClient.query(`SELECT job_name, job_description, hourly_wage FROM users JOIN
                 jobs USING (job_id) WHERE discord_id=${userID}`)
             
-            const { rows: q2 } = await dbClient.query(`SELECT job_name, job_description, hourly_wage FROM users JOIN jobs USING(job_id) WHERE discord_id=${userID}`)
+            const { rows: q2 } = await dbClient.query(`SELECT job_name, job_description, hourly_wage FROM users_jobs JOIN jobs USING(job_id) WHERE discord_id=${userID}`)
+            q2.reverse()
+            
             const { rows: q3 } = await dbClient.query(`SELECT CAST(EXTRACT(HOUR FROM job_last_pay - NOW() + interval '24 hours') AS INT) % 24 AS next_hours,
                 CAST(EXTRACT(MINUTE FROM job_last_pay - NOW() + interval '24 hours') AS INT) % 1440 AS next_minutes,
                 CAST(EXTRACT(SECOND FROM job_last_pay - NOW() + interval '24 hours') AS INT) % 86400 AS next_seconds,
@@ -82,11 +84,7 @@ module.exports = {
                     name: 'Job title:',
                     value: `${job.job_name}`,
                     inline: true
-                }, {
-                    name: 'Job description:',
-                    value: `${job.job_description}`,
-                    inline: true
-                }, 
+                },
                 {
                     name: 'Hourly wage',
                     value: `${job.hourly_wage}$`,
