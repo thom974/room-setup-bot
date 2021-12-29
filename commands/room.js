@@ -1,8 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
-const open = require('open')
+const { roomUpdate } = require('./helpers/roomUpdate.js')
 const fs = require('fs')
 const path = require('path')
-const { DataResolver } = require('discord.js')
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -20,38 +19,25 @@ module.exports = {
         const userID = interaction.user.id
         const username = interaction.user.username
 
+        // Defer reply
+        await interaction.deferReply()
+
         // Display user's room
         if (interaction.options.getSubcommand() === 'view') {
-            // Open browser with user's room
-            const url = `http://${process.env.SERVERHOST}:${process.env.SERVERPORT}/room?id=${userID}`
-            const childProcess = await open(url)
+            // Check if room needs to be updated
+            const promise = new Promise((resolve, reject) => {
+                roomUpdate(interaction, resolve, reject)
+            })
 
-            // Add event listener to downloads folder 
-            fs.watch(process.env.DOWNLOADDIR, (eventType, filename) => {
-                console.log(`event of type ${eventType} occured! name of file is: ${filename}`)
-                if (eventType === 'rename' && filename === process.env.DOWNLOADNAME) {
-                    // Kill child process
-                    childProcess.kill('SIGINT')
+            // Otherwise display user's current room
+            promise.then(bool => {
+                if (!bool) {
+                    const roomPath = path.join(process.env.STORAGEDIR, `${userID}`, process.env.DOWNLOADNAME)
 
-                    const filePath = path.join(process.env.DOWNLOADDIR, `/${filename}`)
-
-                    const roomEmbed = { 
-                        color: '#ff63ce',
-                        title: 'Test Room',
-                        description: 'Your room:',
-                        author: {
-                            name: 'Room Setup Bot'
-                        },
-                        timestamp: new Date(),
-                        footer: {
-                            text: 'Room Setup Bot'
-                        }
-                    }
-
-                    interaction.reply({
-                        embeds: [ roomEmbed ],
+                    interaction.editReply({
+                        content: 'Your room!',
                         files: [
-                            filePath
+                            roomPath
                         ]
                     })
                 }
