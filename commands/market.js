@@ -22,7 +22,7 @@ module.exports = {
 
             // Decoration market has several types of items (e.g decor_1, decor_desk, etc)
             let q1
-            if (marketType != 'decor') {
+            if (marketType !== 'decor') {
                 q1 = await dbClient.query(`SELECT * FROM items WHERE item_type='${marketType}' AND item_id>9`)
             } else {
                 q1 = await dbClient.query(`SELECT * FROM items WHERE (item_type ='decor_1' OR item_type='decor_desk') AND item_id>9`)
