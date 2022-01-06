@@ -29,15 +29,48 @@ module.exports = {
                 roomUpdate(interaction, resolve, reject)
             })
 
+            // Fetch user's net worth
+            const { rows: q1 } = await dbClient.query(`SELECT SUM(item_value) FROM users_items JOIN items USING(item_id) WHERE discord_id=${userID}`)
+            const netWorth = q1[0].sum
+
             // Otherwise display user's current room
             promise.then(bool => {
                 if (!bool) {
                     const roomPath = path.join(process.env.STORAGEDIR, `${userID}`, process.env.DOWNLOADNAME)
+                    
+                    const infoEmbed = {
+                        color: '#ff63ce',
+                        title: `${username}'s Room!`,
+                        description: 'Your statistics:',
+                        author: {
+                            name: 'Room Setup Bot'
+                        },
+                        fields: [
+                            {
+                                name: 'Net worth: ',
+                                value: `${netWorth}$`
+                            },
+                            {
+                                name: 'More details soon...',
+                                value: `...`
+                            },
+                        ],
+                        image: {
+                            url: `attachment://${process.env.DOWNLOADNAME}`
+                        },
+                        timestamp: new Date(),
+                        footer: {
+                            text: 'Room Setup Bot'
+                        }
+                    }
 
                     interaction.editReply({
-                        content: 'Your room!',
+                        embeds: [infoEmbed],
                         files: [
-                            roomPath
+                            {
+                                attachment: roomPath,
+                                name: process.env.DOWNLOADNAME
+                            }
                         ]
                     })
                 }
