@@ -1,0 +1,56 @@
+[
+    {
+        "name":"Base Room",
+        "category":"room",
+        "path":"/room/base_room.gltf",
+        "value":"0"
+    },
+    {
+        "name":"Base Bed",
+        "category":"bed",
+        "path":"/bed/base_bed.gltf",
+        "value":"275"
+    },
+    {
+        "name":"Base Nightstand",
+        "category":"decor_1",
+        "path":"/decor_1/base_nightstand.gltf",
+        "value":"70"
+    },
+    {
+        "name":"Base Chair",
+        "category":"chair",
+        "path":"/chair/base_chair.gltf",
+        "value":"150"
+    },
+    {
+        "name":"Base Desk",
+        "category":"desk",
+        "path":"/desk/base_desk.gltf",
+        "value":"200"
+    },
+    {
+        "name":"Base Computer",
+        "category":"computer",
+        "path":"/computer/base_computer.gltf",
+        "value":"500"
+    },
+    {
+        "name":"Base Keyboard",
+        "category":"keyboard",
+        "path":"/keyboard/base_keyboard.gltf",
+        "value":"20"
+    },
+    {
+        "name":"Base Lamp",
+        "category":"decor_desk",
+        "path":"/decor_desk/base_lamp.gltf",
+        "value":"25"
+    },
+    {
+        "name":"Base Monitor",
+        "category":"monitor",
+        "path":"/monitor/base_monitor.gltf",
+        "value":"100"
+    }
+]

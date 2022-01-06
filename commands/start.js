@@ -63,12 +63,18 @@ module.exports = {
                 if (err) throw err
             })    
 
-            fs.copyFile('db/templates/room.js', path.join(userStorageDir, 'room.js'), (err) => {
-                if (err) throw err
-            })
+            // fs.copyFile('db/templates/room.js', path.join(userStorageDir, 'room.js'), (err) => {
+            //     if (err) throw err
+            // })
 
-            fs.copyFile('db/templates/items.json', path.join(userStorageDir, 'items.json'), (err) => {
-                if (err) throw err
+            // fs.copyFile('db/templates/items.json', path.join(userStorageDir, 'items.json'), (err) => {
+            //     if (err) throw err
+            // })
+
+            // Add user items 
+            const baseItems = [1,2,3,4,5,6,7,8,9]
+            baseItems.forEach(num => {
+                dbClient.query(`INSERT INTO users_items (discord_id, item_id, item_active) VALUES ('${userID}','${num}','${true}')`)
             })
 
             await interaction.reply({

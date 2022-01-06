@@ -38,8 +38,13 @@ module.exports = {
         }
 
         if (needsUpdate) {
+            // Fetch user items
+            const { rows: q3 } = await dbClient.query(`SELECT item_path FROM users_items JOIN items USING(item_id) WHERE discord_id=583812176280551429 AND item_active=true`)
+            const itemPaths = q3.map(item => item.item_path)
+            const itemQuery = `&items=${itemPaths.join()}`
+
             // Open browser with user's room
-            const url = `http://${process.env.SERVERHOST}:${process.env.SERVERPORT}/room?id=${userID}`
+            const url = `http://${process.env.SERVERHOST}:${process.env.SERVERPORT}/room?id=${userID}${itemQuery}`
             const childProcess = await open(url, { app: { name: 'chrome' }})
             let replied = false
 

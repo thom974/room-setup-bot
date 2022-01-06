@@ -6,6 +6,7 @@ const { Client } = require('pg')
 
 const jobs = require('./json/jobs.json')
 const tasks = require('./json/tasks.json')
+const items = require('./json/items.json')
 
 const client = new Client({
     user: process.env.DBUSER,
@@ -56,5 +57,10 @@ const addTasks = () => {
     }
 }
 
+const addItems = () => {
+    items.forEach(({ category, name, value, path }) => {
+        client.query(`INSERT INTO items (item_type, item_name, item_value, item_path) VALUES ('${category}','${name}','${value}','${path}')`)
+    })
+}
 
-addJobs()
+addItems()
