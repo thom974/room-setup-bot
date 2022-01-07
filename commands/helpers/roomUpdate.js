@@ -25,22 +25,63 @@ module.exports = {
                 if (err) throw err
             })
 
+            // Update user room update state
             const { rows: q2 } = await dbClient.query(`UPDATE users SET room_needs_update = false WHERE discord_id=${userID}`)
+            
+            // Fetch user's net worth
+            const { rows: q3 } = await dbClient.query(`SELECT SUM(item_value) FROM users_items JOIN items USING(item_id) WHERE discord_id=${userID}`)
+            const netWorth = q3[0].sum
+
+            const infoEmbed = {
+                color: '#ff63ce',
+                title: `${username}'s Room!`,
+                description: 'Your statistics:',
+                author: {
+                    name: 'Room Setup Bot'
+                },
+                fields: [
+                    {
+                        name: 'Net worth: ',
+                        value: `${netWorth}$`
+                    },
+                    {
+                        name: 'More details soon...',
+                        value: `...`
+                    },
+                ],
+                image: {
+                    url: `attachment://${process.env.DOWNLOADNAME}`
+                },
+                timestamp: new Date(),
+                footer: {
+                    text: 'Room Setup Bot'
+                }
+            }
 
             await interaction.editReply({
-                content: 'Your room!',
+                embeds: [infoEmbed],
                 files: [
-                    userStorageDir
+                    {
+                        attachment: userStorageDir,
+                        name: process.env.DOWNLOADNAME
+                    }
                 ]
             })
+
+            // await interaction.editReply({
+            //     content: 'Your room!',
+            //     files: [
+            //         userStorageDir
+            //     ]
+            // })
 
             resolve(true)
         }
 
         if (needsUpdate) {
             // Fetch user items
-            const { rows: q3 } = await dbClient.query(`SELECT item_path FROM users_items JOIN items USING(item_id) WHERE discord_id=583812176280551429 AND item_active=true`)
-            const itemPaths = q3.map(item => item.item_path)
+            const { rows: q3 } = await dbClient.query(`SELECT item_path, item_style FROM users_items JOIN items USING(item_id) WHERE discord_id=${userID} AND item_active=true`)
+            const itemPaths = q3.map(item => item.item_style === null ? item.item_path : [item.item_path.slice(0, item.item_path.indexOf('.')), `_${item.item_style}`, item.item_path.slice(item.item_path.indexOf('.'))].join(''))
             const itemQuery = `&items=${itemPaths.join()}`
 
             // Open browser with user's room
