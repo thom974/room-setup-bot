@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders')
 const { MessageActionRow, MessageButton, Collector } = require('discord.js')
 const { jobUpdate } = require('./helpers/jobUpdate.js')
 const { jobMarketUpdate } = require('./helpers/jobMarketUpdate.js')
+const axios = require('axios').default
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -30,6 +31,14 @@ module.exports = {
         // Fetch important variables about user 
         const username = interaction.user.username
         const userID = interaction.user.id
+        const userTag = interaction.user.tag
+        const userAvatar = interaction.user.displayAvatarURL()
+        const userInfo = await axios.get(`https://discord.com/api/users/${userID}`, {
+            headers: {
+                Authorization: `Bot ${interaction.client.token}`
+            }
+        })
+        const userColor = userInfo.data.accent_color
 
         // Update paycheck if needed
         jobUpdate(interaction)
@@ -55,58 +64,50 @@ module.exports = {
             if (q1.length === 0 ) {
                 currentJobFields.push(...[
                     {
-                        name: 'You are currently unemployed!',
-                        value: 'Visit the job market to find a new job.'
+                        name: '\u200B',
+                        value: '**You are currently unemployed!** Visit the job market to find a new job.'
                     }
                 ])
             } else {
                 const { job_name, job_description, hourly_wage } = q1[0]
-                currentJobFields.push(...[
-                    {
-                        name: 'Current job:',
-                        value: `${job_name}`
-                    },
-                    {
-                        name: 'Job description:',
-                        value: `${job_description}`
-                    },
-                    {
-                        name: 'Hourly wage:',
-                        value: `${hourly_wage}$`
-                    }
-                ])
+                currentJobFields.push({
+                    name: '\u200B',
+                    value: `**Current job**: ${job_name}\n**Job description**: ${job_description}\n**Hourly wage**: ${hourly_wage}$\n\u200B`
+                })
             }
 
             // Create fields for each job in job history 
             const jobFields = []
-            for (const job of q2) {
+            for (let i = 0; i < q2.length; i++) {
                 jobFields.push({
-                    name: 'Job title:',
-                    value: `${job.job_name}`,
-                    inline: true
-                },
-                {
-                    name: 'Hourly wage',
-                    value: `${job.hourly_wage}$`,
+                    name: '\u200B',
+                    value: `**Job title**: \n${q2[i].job_name}`,
                     inline: true
                 },
                 {
                     name: '\u200B',
                     value: '\u200B',
-                    inline: false
+                    inline: true
+                },
+                {
+                    name: '\u200B',
+                    value: `**Hourly wage**: \n${q2[i].hourly_wage}$${i === q2.length - 1 ? '\n\u200B' : ''}`,
+                    inline: true
                 })
             }
 
+
             // Embed to display current job stats
             const currentEmbed = {
-                color: '#ff63ce',
+                color: userColor,
                 title: `${username}'s Job Statistics`,
                 description: 'View info about your employment!',
                 author: {
-                    name: 'Room Setup Bot'
+                    name: `${userTag}`,
+                    iconURL: `${userAvatar}`
                 },
                 fields: [
-                    ...currentJobFields
+                    ...currentJobFields,
                 ],
                 timestamp: new Date(),
                 footer: {
@@ -116,18 +117,15 @@ module.exports = {
 
             // Embed to display past employment stats
             const pastEmbed = {
-                color: '#ff63ce',
+                color: userColor,
                 title: `${username}'s Past Jobs`,
-                description: 'Your full employment history:',
+                description: `${username}'s full employment history.`,
                 author: {
-                    name: 'Room Setup Bot'
+                    name: `${userTag}`,
+                    iconURL: `${userAvatar}`
                 },
                 fields: [
-                    {
-                        name: '\u200B',
-                        value: '\u200B'
-                    },
-                    ...jobFields
+                    ...jobFields,
                 ],
                 timestamp: new Date(),
                 footer: {
@@ -137,20 +135,21 @@ module.exports = {
 
             // Embed to display job pay stats
             const payEmbed = {
-                color: '#ff63ce',
+                color: userColor,
                 title: `${username}'s Paycheck`,
                 description: 'Money earned from your job!  Paycheck is automatically updated every 24 hours. To collect paycheck, use /job collect.',
                 author: {
-                    name: 'Room Setup Bot'
+                    name: `${userTag}`,
+                    iconURL: `${userAvatar}`
                 },
                 fields: [
                     {
-                        name: 'Amount in paycheck:',
-                        value: `${job_paycheck}$`
+                        name: '\u200B',
+                        value: `**Amount in paycheck**: \n${job_paycheck}$`
                     },
                     {
-                        name: 'Your next pay is in:',
-                        value: `${next_hours} hours, ${next_minutes} minutes and ${next_seconds} seconds!`
+                        name: '\u200B',
+                        value: `**Your next pay is in**: \n${next_hours} hours, ${next_minutes} minutes and ${next_seconds} seconds!\n\u200B`
                     }
                 ],
                 timestamp: new Date(),
@@ -320,8 +319,8 @@ module.exports = {
 
             // Create fields for market embed
             const marketFields = []
-            for (const job of q2) {
-                const { job_name, job_description, hourly_wage, minimum_net, minimum_jobs } = job
+            for (let i = 0; i < q2.length; i++) {
+                const { job_name, job_description, hourly_wage, minimum_net, minimum_jobs } = q2[i]
 
                 // Create button for action row 
                 marketRow.addComponents(
@@ -334,38 +333,39 @@ module.exports = {
                 marketFields.push(...[
                     {
                         name: '\u200B',
-                        value: '\u200B'
+                        value: `**Job title #${i+1}**: \n${job_name}`
                     },
                     {
-                        name: 'Job title:',
-                        value: job_name
+                        name: '\u200B',
+                        value: `**Job description**: \n${job_description}`
                     },
                     {
-                        name: 'Job description:',
-                        value: job_description
+                        name: '\u200B',
+                        value: `**Hourly wage**: \n${hourly_wage}$`
                     },
                     {
-                        name: 'Hourly wage:',
-                        value: `${hourly_wage}$`
-                    },
-                    {
-                        name: 'Requirements to apply:',
-                        value: `Minimum net worth of ${minimum_net}$ and must have worked ${minimum_jobs} prior job(s).`
+                        name: '\u200B',
+                        value: `**Requirements to apply**: \nMinimum net worth of ${minimum_net}$ and must have worked ${minimum_jobs} prior job(s).${i === q2.length - 1 ? '\n\u200B' : '\n\n\u200B'}`
                     }
                 ])
             }
 
             // Create embed for market 
             const marketEmbed = {
-                color: '#ff63ce',
+                color: userColor,
                 title: `${username}'s Job Market`,
                 description: `Jobs that are open for applications! Job market refreshes automatically every 5 days. Your market refreshes in: ${hours} hours, ${minutes} minutes and ${seconds} seconds.`,
                 author: {
-                    name: 'Room Setup Bot'
+                    name: `${userTag}`,
+                    iconURL: `${userAvatar}`
                 },
                 fields: [
                     ...marketFields
-                ]
+                ],
+                timestamp: new Date(),
+                footer: {
+                    text: 'Room Setup Bot'
+                }
             }
 
             // Reply to user with embed and components

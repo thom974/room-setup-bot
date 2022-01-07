@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const { roomUpdate } = require('./helpers/roomUpdate.js')
+const axios = require('axios').default
 const fs = require('fs')
 const path = require('path')
 
@@ -9,7 +10,7 @@ module.exports = {
         .setDescription('room related commands: view')
         .addSubcommand(subcommand => subcommand
             .setName('view')
-            .setDescription('view your room')
+            .setDescription('view your room.')
         ),
     async execute(interaction) {
         // dbClient 
@@ -18,6 +19,14 @@ module.exports = {
         // Fetch import variables about user
         const userID = interaction.user.id
         const username = interaction.user.username
+        const userTag = interaction.user.tag
+        const userAvatar = interaction.user.displayAvatarURL()
+        const userInfo = await axios.get(`https://discord.com/api/users/${userID}`, {
+            headers: {
+                Authorization: `Bot ${interaction.client.token}`
+            }
+        })
+        const userColor = userInfo.data.accent_color
 
         // Defer reply
         await interaction.deferReply()
@@ -30,7 +39,7 @@ module.exports = {
             })
 
             // Fetch user's net worth
-            const { rows: q1 } = await dbClient.query(`SELECT SUM(item_value) FROM users_items JOIN items USING(item_id) WHERE discord_id=${userID}`)
+            const { rows: q1 } = await dbClient.query(`SELECT SUM(item_value) FROM users_items JOIN items USING(item_id) WHERE discord_id=${userID} AND  item_active=true`)
             const netWorth = q1[0].sum
 
             // Otherwise display user's current room
@@ -39,21 +48,18 @@ module.exports = {
                     const roomPath = path.join(process.env.STORAGEDIR, `${userID}`, process.env.DOWNLOADNAME)
                     
                     const infoEmbed = {
-                        color: '#ff63ce',
-                        title: `${username}'s Room!`,
-                        description: 'Your statistics:',
+                        color: userColor,
+                        title: `${username}'s Room`,
+                        description: `Your room stats!`,
                         author: {
-                            name: 'Room Setup Bot'
+                            name: `${userTag}`, 
+                            iconURL: `${userAvatar}`
                         },
                         fields: [
                             {
-                                name: 'Net worth: ',
-                                value: `${netWorth}$`
-                            },
-                            {
-                                name: 'More details soon...',
-                                value: `...`
-                            },
+                                name: '\u200B',
+                                value: `**Current room value**: \n${netWorth}$`
+                            }
                         ],
                         image: {
                             url: `attachment://${process.env.DOWNLOADNAME}`

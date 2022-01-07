@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
+const axios = require('axios').default
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -16,6 +17,14 @@ module.exports = {
         // Fetch important info about user
         const userID = interaction.user.id
         const username = interaction.user.username
+        const userTag = interaction.user.tag
+        const userAvatar = interaction.user.displayAvatarURL()
+        const userInfo = await axios.get(`https://discord.com/api/users/${userID}`, {
+            headers: {
+                Authorization: `Bot ${interaction.client.token}`
+            }
+        })
+        const userColor = userInfo.data.accent_color
 
         if (interaction.options.getSubcommand() === 'view') {
             const marketType = interaction.options.getString('market_type')
@@ -30,29 +39,31 @@ module.exports = {
 
             // Create field for each item fetched from market
             const marketFields = []
-            q1.rows.forEach(item => {
+            for (let i = 0; i < q1.rows.length; i++) {
                 marketFields.push({
-                    name: 'Item name: ',
-                    value: `${item.item_name}`,
-                    inline: true
-                },
-                {
-                    name: 'Cost: ',
-                    value: `${item.item_value}$`,
+                    name: '\u200B',
+                    value: `**Item name**: \n${q1.rows[i].item_name}`,
                     inline: true
                 },
                 {
                     name: '\u200B',
-                    value: '\u200B'
+                    value: '\u200B',
+                    inline: true
+                },
+                {
+                    name: '\u200B',
+                    value: `**Cost**: \n${q1.rows[i].item_value}$${i === q1.rows.length - 1 ? '\n\u200B' : ''}`,
+                    inline: true
                 })
-            })
+            }
 
             const marketEmbed = {
-                color: '#ff63ce',
+                color: userColor,
                 title: `${marketType.charAt(0).toUpperCase() + marketType.substr(1)} Market`,
                 description: '',
                 author: {
-                    name: 'Room Setup Bot'
+                    name: `${userTag}`, 
+                    iconURL: `${userAvatar}`
                 },
                 fields: [
                     ...marketFields
