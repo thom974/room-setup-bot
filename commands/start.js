@@ -72,9 +72,24 @@ module.exports = {
             // })
 
             // Add user items 
-            const baseItems = [1,2,3,4,5,6,7,8,9]
+            const baseItems = [
+                {id: 1, style: 'blue'},     // Room
+                {id: 2, style: 'blue'},     // Bed
+                3,
+                {id: 4, style: 'blue'},     // Chair
+                5,
+                6,
+                7,
+                8,
+                9
+            ]
+
             baseItems.forEach(num => {
-                dbClient.query(`INSERT INTO users_items (discord_id, item_id, item_active) VALUES ('${userID}','${num}','${true}')`)
+                if (typeof num === 'object') {
+                    dbClient.query(`INSERT INTO users_items (discord_id, item_id, item_active, item_style) VALUES ('${userID}','${num.id}','${true}', '${num.style}')`)
+                } else {
+                    dbClient.query(`INSERT INTO users_items (discord_id, item_id, item_active, item_style) VALUES ('${userID}','${num}','${true}', NULL)`)
+                }
             })
 
             await interaction.reply({
