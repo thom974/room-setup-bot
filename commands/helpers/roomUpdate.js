@@ -1,6 +1,7 @@
 const open = require('open')
 const fs = require('fs')
 const path = require('path')
+const axios = require('axios').default
 const { resolve } = require('path')
 const { rejects } = require('assert')
 
@@ -12,6 +13,14 @@ module.exports = {
         // Fetch important information about user
         const userID = interaction.user.id
         const username = interaction.user.username
+        const userTag = interaction.user.tag
+        const userAvatar = interaction.user.displayAvatarURL()
+        const userInfo = await axios.get(`https://discord.com/api/users/${userID}`, {
+            headers: {
+                Authorization: `Bot ${interaction.client.token}`
+            }
+        })
+        const userColor = userInfo.data.accent_color
 
         // Check if room needs update 
         const { rows: q1 } = await dbClient.query(`SELECT room_needs_update AS update FROM users WHERE discord_id=${userID}`)
@@ -33,21 +42,18 @@ module.exports = {
             const netWorth = q3[0].sum
 
             const infoEmbed = {
-                color: '#ff63ce',
-                title: `${username}'s Room!`,
-                description: 'Your statistics:',
+                color: userColor,
+                title: `${username}'s Room`,
+                description: 'Your room stats!',
                 author: {
-                    name: 'Room Setup Bot'
+                    name: `${userTag}`, 
+                    iconURL: `${userAvatar}`
                 },
                 fields: [
                     {
-                        name: 'Net worth: ',
-                        value: `${netWorth}$`
-                    },
-                    {
-                        name: 'More details soon...',
-                        value: `...`
-                    },
+                        name: '\u200B',
+                        value: `**Current room value**: \n${netWorth}$`
+                    }
                 ],
                 image: {
                     url: `attachment://${process.env.DOWNLOADNAME}`
