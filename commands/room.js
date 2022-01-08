@@ -7,10 +7,19 @@ const path = require('path')
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('room')
-        .setDescription('room related commands: view')
+        .setDescription('room related commands: view, place')
         .addSubcommand(subcommand => subcommand
             .setName('view')
             .setDescription('view your room.')
+        )
+        .addSubcommand(subcommand => subcommand
+            .setName('place')
+            .setDescription('place furnishings down in your room.')
+            .addNumberOption(option => option
+                .setName('item_id')
+                .setDescription('the id of the furnishing you want to place.')
+                .setRequired(true)
+            )
         ),
     async execute(interaction) {
         // dbClient 
@@ -28,11 +37,11 @@ module.exports = {
         })
         const userColor = userInfo.data.accent_color
 
-        // Defer reply
-        await interaction.deferReply()
-
         // Display user's room
         if (interaction.options.getSubcommand() === 'view') {
+            // Defer reply
+            await interaction.deferReply()
+
             // Check if room needs to be updated
             const promise = new Promise((resolve, reject) => {
                 roomUpdate(interaction, resolve, reject)
@@ -80,6 +89,54 @@ module.exports = {
                         ]
                     })
                 }
+            })
+        } else if (interaction.options.getSubcommand() === 'place') {
+            const itemPlaced = interaction.options.getNumber('item_id')
+
+            // Check if user owns furnishing 
+            const { rows: q1 } = await dbClient.query(`SELECT item_name FROM users_items JOIN items USING(item_id) WHERE discord_id=${userID} AND item_id=${itemPlaced}`)
+
+            if (q1.length === 0) {
+                await interaction.reply({
+                    content: `You don't own that furnishing, ${username}!`,
+                    ephemeral: true
+                })
+
+                return 
+            }
+
+            // Check if furnishing is already active
+            const { rows: q7 } = await dbClient.query(`SELECT item_active FROM users_items WHERE discord_id=${userID} AND item_id=${itemPlaced}`)
+            
+            if (q7[0].item_active) {
+                interaction.reply({
+                    content: `You currently have that furnishing placed, ${username}!`,
+                    ephemeral: true 
+                })
+
+                return
+            }
+
+            const itemName = q1[0].item_name
+
+            // If furnishing owned, set its active state to true 
+            const { rows: q2 } = await dbClient.query(`UPDATE users_items SET item_active = true WHERE discord_id=${userID} AND item_id=${itemPlaced}`)
+
+            // Set item_active = false for currently active furnishing of same type as itemPlaced
+            const { rows: q3 } = await dbClient.query(`SELECT item_type FROM items WHERE item_id=${itemPlaced}`)
+            const itemType = q3[0].item_type
+
+            const { rows: q4 } = await dbClient.query(`SELECT item_id, item_name FROM users_items JOIN items USING(item_id) WHERE discord_id=${userID} AND item_type='${itemType}' AND item_active=true`)
+            const activeItemID = q4[0].item_id
+            const activeItemName = q4[0].item_name
+
+            const { rows: q5 } = await dbClient.query(`UPDATE users_items SET item_active = false WHERE discord_id=${userID} AND item_id=${activeItemID}`)
+            
+            // Update room_needs_update for user
+            const { rows: q6 } = await dbClient.query(`UPDATE users SET room_needs_update = true WHERE discord_id=${userID}`)
+
+            interaction.reply({
+                content: `Successfully placed \`${itemName}\`, removing your old furnishing \`${activeItemName}\`!`
             })
         }
     }
