@@ -1,10 +1,12 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
+const { MessageAttachment } = require('discord.js')
+const path = require('path')
 const axios = require('axios').default
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('inventory')
-        .setDescription('access inventory related commands: view')
+        .setDescription('access inventory related commands: view, editstyle')
         .addSubcommand(subcommand => subcommand
             .setName('view')
             .setDescription('view the furnishings that you own.')
@@ -15,6 +17,11 @@ module.exports = {
             .setDescription('change the style of your furnishings.')
             .addNumberOption(option => option.setName('item_id').setDescription('the id of the furnishing you want to change the style of.').setRequired(true))
             .addStringOption(option => option.setName('style').setDescription('the style you want to update your furnishing with.').setRequired(true))
+        )
+        .addSubcommand(subcommand => subcommand
+            .setName('viewitem')
+            .setDescription('view a specific furnishing you own in detail.')
+            .addNumberOption(option => option.setName('item_id').setDescription('the id of the furnishing to view. you must own it.').setRequired(true))
         ),
     async execute(interaction) {
         // dbClient
@@ -212,6 +219,78 @@ module.exports = {
             }
 
             
+        } else if (interaction.options.getSubcommand() === 'viewitem') {
+            const itemViewed = interaction.options.getNumber('item_id')
+
+            // Check if user owns item
+            const { rows: q1 } = await dbClient.query(`SELECT * FROM users_items WHERE discord_id=${userID} AND item_id=${itemViewed}`)
+            
+            if (q1.length === 0) {
+                interaction.reply({
+                    content: `You don't own this furnishing, ${username}!`,
+                    ephemeral: true
+                })
+
+                return
+            }
+
+            // Display gif of item
+            const { rows: q2 } = await dbClient.query(`SELECT item_type, item_name, item_value, item_preview FROM users_items JOIN items USING(item_id) WHERE discord_id=${userID} AND item_id=${itemViewed}`)
+            const { item_type : itemType, item_name : itemName, item_value : itemValue, item_preview : itemPreviewLink } = q2[0]
+            
+            // Temporary filter, as some items don't have previews right now 
+            if (itemPreviewLink === null || itemPreviewLink === undefined) {
+                interaction.reply({
+                    content: `Sorry, but this item isn't supported by this command at the moment! Check back later!`,
+                    ephemeral: true 
+                })
+
+                return
+            }
+
+            const itemPath = path.join('../room-setup-storage/objects', 'sample.png')
+            // const itemPreviewFile = new MessageAttachment(itemPath)
+
+            const viewEmbed = {
+                color: userColor,
+                title: `${username}'s Item`,
+                description: '\u200B',
+                author: {
+                    name: `${userTag}`,
+                    iconURL: `${userAvatar}`
+                },
+                fields: [
+                    {
+                        name: `Item type: \`${itemType}\``,
+                        value: '\u200B'
+                    },
+                    {
+                        name: `Item name: \`${itemName}\``,
+                        value: '\u200B'
+                    },
+                    {
+                        name: `Item value: \`${itemValue}$\``,
+                        value: '\u200B'
+                    }
+                ],
+                image: {
+                    url: `attachment://${'sample.png'}`
+                },
+                timestamp: new Date(),
+                footer: {
+                    text: 'Room Setup Bot'
+                }
+            }
+
+            interaction.reply({
+                embeds: [viewEmbed],
+                files: [
+                    {
+                        attachment: itemPath,
+                        name: 'sample.png'
+                    }
+                ]
+            })
         }
 
     }
